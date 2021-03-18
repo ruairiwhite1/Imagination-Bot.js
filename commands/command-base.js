@@ -1,14 +1,7 @@
-/**
- * NOTE:
- *  Some parts of this code have been improved since the original command base video.
- *  This file should still work as expected, however if you are learning the inner workings of
- *  this file then expect the file to be slightly different than in the video.
- */
-
 const mongo = require('@util/mongo')
 const commandPrefixSchema = require('@schemas/command-prefix-schema')
 const { prefix: globalPrefix } = require('@root/config.json')
-const guildPrefixes = {} // { 'guildId' : 'prefix' }
+const guildPrefixes = {} 
 
 const validatePermissions = (permissions) => {
   const validPermissions = [
@@ -64,14 +57,12 @@ module.exports = (client, commandOptions) => {
     callback,
   } = commandOptions
 
-  // Ensure the command and aliases are in an array
   if (typeof commands === 'string') {
     commands = [commands]
   }
 
-  console.log(`Registering command "${commands[0]}"`)
+  console.log(`Registering command "${commands}"`)
 
-  // Ensure the permissions are in an array and are all valid
   if (permissions.length) {
     if (typeof permissions === 'string') {
       permissions = [permissions]
@@ -80,7 +71,6 @@ module.exports = (client, commandOptions) => {
     validatePermissions(permissions)
   }
 
-  // Listen for messages
   client.on('message', async (message) => {
     const { member, content, guild } = message
 
@@ -93,9 +83,6 @@ module.exports = (client, commandOptions) => {
         content.toLowerCase().startsWith(`${command} `) ||
         content.toLowerCase() === command
       ) {
-        // A command has been ran
-
-        // Ensure the user has the required permissions
         for (const permission of permissions) {
           if (!member.hasPermission(permission)) {
             message.reply(permissionError)
@@ -103,7 +90,6 @@ module.exports = (client, commandOptions) => {
           }
         }
 
-        // Ensure the user has the required roles
         for (const requiredRole of requiredRoles) {
           const role = guild.roles.cache.find(
             (role) => role.name === requiredRole
@@ -117,13 +103,10 @@ module.exports = (client, commandOptions) => {
           }
         }
 
-        // Split on any number of spaces
         const arguments = content.split(/[ ]+/)
 
-        // Remove the command which is the first index
         arguments.shift()
 
-        // Ensure we have the correct number of arguments
         if (
           arguments.length < minArgs ||
           (maxArgs !== null && arguments.length > maxArgs)
@@ -134,7 +117,6 @@ module.exports = (client, commandOptions) => {
           return
         }
 
-        // Handle the custom command code
         callback(message, arguments, arguments.join(' '), client)
 
         return
@@ -143,10 +125,6 @@ module.exports = (client, commandOptions) => {
   })
 }
 
-/**
- * I forgot to add this function to the video.
- * It updates the cache when the !setprefix command is ran.
- */
 module.exports.updateCache = (guildId, newPrefix) => {
   guildPrefixes[guildId] = newPrefix
 }

@@ -7,5 +7,5 @@ module.exports = {
 
             message.reply(`\nBot Latency: ${ping}\n API Latency: ${client.ws.ping}`)
         })
-    },
+    }
 }

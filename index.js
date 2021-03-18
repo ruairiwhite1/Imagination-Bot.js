@@ -22,6 +22,12 @@ client.on('ready', async () => {
     antiAd(client)
     welcome(client)
     messageCount(client)
+
+    let y = process.openStdin()
+    y.addListener("data", res => {
+        let x = res.toString().trim().split(/ +/g)
+        client.channels.cache.get("647398611725975553").send(x.join(" "));
+});
     
     await mongo().then(mongoose => {
         try {
@@ -30,29 +36,6 @@ client.on('ready', async () => {
           mongoose.connection.close()
         }
     })
-
-    command(client, 'ban', (message) => {
-        const {member, mentions } = message
-
-        const tag = `<@${member.id}>`
-        
-        if (member.hasPermission('ADMINISTRATOR') ||
-            member.hasPermission('BAN_MEMBERS')
-        ) {
-            const target = mentions.users.first()
-            if (target) {
-                const targetMember = message.guild.members.cache.get(target.id)
-                targetMember.ban()
-                message.channel.send(`${tag} That user has been banned.`)
-            } else {
-                message.channel.send(`${tag} Please specify the user you are trying to ban.`)
-            }
-        } else {
-          message.channel.send(
-              `${tag} You do not have permission to use this command.`)
-        }
-
-        })
 
         command(client, 'kick', (message) => {
             const {member, mentions } = message
